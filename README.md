@@ -24,7 +24,7 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 ## Installation
 
 1. Download the latest version from the [Releases](../../releases) page.
-2. Copy the `ASTinyPlates` folder into `Interface/AddOns`.
+2. Copy the `ASTinyPlates` folder into `/AddOns`.
 3. Restart the game (or reload the UI) and make sure the addon is enabled.
 
 ## Known Quirks
