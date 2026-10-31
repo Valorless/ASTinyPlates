@@ -633,8 +633,8 @@ local function UpdateBossGuardianDebuffs(frame)
 	if ( iconIndex == 0 ) then row:Hide(); return; end
 	row:SetWidth(iconIndex * DEBUFF_ICON_SIZE + (iconIndex - 1) * DEBUFF_ICON_GAP);
 	row:ClearAllPoints();
-	local bar = frame.astinyplatesBossGuardianBar or frame.astinyplatesOverlay
-		or frame.astinyplatesStyledVisual;
+	local bar = frame.astinyplatesStyledVisual or frame.astinyplatesBossGuardianBar
+		or frame.astinyplatesOverlay;
 	if ( bar ) then
 		row:SetPoint("TOP", bar, "BOTTOM", 0, -3);
 	else
