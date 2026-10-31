@@ -73,25 +73,51 @@ local function RefreshBossGuardianNames(force)
 	lastSpecialDebuffsUpdate = debuffsUpdate;
 end
 
-local function GetPlateName(frame)
-	local regions = { frame:GetRegions() };
+local function NormalizeName(text)
+	if ( not text ) then return nil; end
+	text = string.gsub(text, "|c%x%x%x%x%x%x%x%x", "");
+	text = string.gsub(text, "|r", "");
+	text = string.gsub(text, "^%s+", "");
+	text = string.gsub(text, "%s+$", "");
+	if ( text == "" ) then return nil; end
+	return text;
+end
+
+local function IsOwnObject(frame, object)
+	return object == frame.astinyplatesOverlay or object == frame.astinyplatesDebuffRow;
+end
+
+-- Searches the plate and its descendants, because UI replacements such as SDUI
+-- may move the name FontString into a child frame or blank the native one.
+local function GetPlateName(frame, root)
+	root = root or frame;
+	local regions = { root:GetRegions() };
 	for i = 1, table.getn(regions) do
 		local region = regions[i];
 		if ( region and region ~= frame.astinyplatesBossGuardianLabel
 				and region:GetObjectType() == "FontString" ) then
-			local name = region:GetText();
-			if ( name and name ~= "" ) then
+			local name = NormalizeName(region:GetText());
+			-- Purely numeric text is a level indicator, not a name.
+			if ( name and not string.find(name, "^%d+$") ) then
 				frame.astinyplatesNameRegion = region;
 				return name;
 			end
+		end
+	end
+	local children = { root:GetChildren() };
+	for i = 1, table.getn(children) do
+		if ( not IsOwnObject(frame, children[i]) ) then
+			local name = GetPlateName(frame, children[i]);
+			if ( name ) then return name; end
 		end
 	end
 	return nil;
 end
 
 local function CachePlateName(frame)
-	local name = GetPlateName(frame);
-	if ( name ) then frame.astinyplatesPlateName = name; end
+	-- Plates are recycled for other units, so a stale name must never survive
+	-- a failed lookup.
+	frame.astinyplatesPlateName = GetPlateName(frame);
 end
 
 local function IsBossOrGuardianName(name)
@@ -104,8 +130,8 @@ local function FindBossGuardianName(frame)
 		local region = regions[i];
 		if ( region and region ~= frame.astinyplatesBossGuardianLabel
 				and region:GetObjectType() == "FontString" ) then
-			local name = region:GetText();
-			if ( name and name ~= "" and IsBossOrGuardianName(name) ) then
+			local name = NormalizeName(region:GetText());
+			if ( name and IsBossOrGuardianName(name) ) then
 				frame.astinyplatesNameRegion = region;
 				return name;
 			end
@@ -128,7 +154,9 @@ local function IsBossOrGuardianPlate(frame)
 	end
 	local name = frame.astinyplatesPlateName;
 	if ( not name ) then
-		return frame.astinyplatesBossGuardian or false;
+		frame.astinyplatesBossGuardian = false;
+		frame.astinyplatesBossGuardianName = nil;
+		return false;
 	end
 	if ( frame.astinyplatesBossGuardianName
 			and frame.astinyplatesBossGuardianName ~= name ) then
@@ -270,7 +298,8 @@ local function HideNameText(frame)
 	local regions = { frame:GetRegions() };
 	for i = 1, table.getn(regions) do
 		local region = regions[i];
-		if ( region and region:GetObjectType() == "FontString" ) then
+		if ( region and region ~= frame.astinyplatesBossGuardianLabel
+				and region:GetObjectType() == "FontString" ) then
 			region:SetAlpha(0);
 			region:Hide();
 		end
@@ -317,7 +346,10 @@ end
 
 local function UpdateBossGuardianLabel(frame)
 	local name = frame.astinyplatesPlateName;
-	if ( not name or name == "" ) then return; end
+	if ( not name or name == "" ) then
+		if ( frame.astinyplatesBossGuardianLabel ) then frame.astinyplatesBossGuardianLabel:Hide(); end
+		return;
+	end
 	local label = frame.astinyplatesBossGuardianLabel;
 	if ( not label ) then
 		label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall");
