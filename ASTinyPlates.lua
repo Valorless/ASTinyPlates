@@ -694,6 +694,18 @@ local function UpdateNamePlaceholder(frame)
 		if ( label ) then label:Hide(); end
 		return;
 	end
+	local visual = frame.astinyplatesStyledVisual;
+	local native = visual and FindNameFontString(visual, frame.astinyplatesPlateName);
+	if ( native and NormalizeName(native:GetText()) == frame.astinyplatesPlateName ) then
+		-- Let the replacement UI draw its own name where it expects it; our label
+		-- sits behind its child frames and was not visible.
+		native:SetAlpha(1);
+		native:Show();
+		if ( native:IsVisible() ) then
+			if ( label ) then label:Hide(); end
+			return;
+		end
+	end
 	UpdateBossGuardianLabel(frame);
 	ApplyBossGuardianLabelFont(frame);
 	HideMatchingNameText(frame, frame.astinyplatesPlateName,
