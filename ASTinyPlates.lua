@@ -759,6 +759,7 @@ local function ApplyPlateStyle(frame)
 	local overlayScale = originalOverlayScale;
 	if ( overlay:GetScale() ~= overlayScale ) then overlay:SetScale(overlayScale); end
 	EnsureOverlayBorder(frame, overlay);
+	if ( not overlay:IsShown() ) then overlay:Show(); end
 	if ( not frame.astinyplatesOverlayBaseWidth ) then
 		frame.astinyplatesOverlayBaseWidth = frame.astinyplatesSourceOriginalWidth
 			or frame.astinyplatesOverlayWidth / PLATE_SCALE;
