@@ -1080,6 +1080,34 @@ SlashCmdList["ASTINYPLATESDEBUG"] = function()
 			DEFAULT_CHAT_FRAME:AddMessage("ASTinyPlates source shown="
 				.. tostring(frame.astinyplatesSourceBar:IsShown()));
 		end
+		do
+			local label = frame.astinyplatesBossGuardianLabel;
+			local lines = {};
+			local function Dump(obj, depth)
+				local regs = { obj:GetRegions() };
+				for r = 1, table.getn(regs) do
+					if ( regs[r]:GetObjectType() == "FontString" ) then
+						table.insert(lines, string.rep(" ", depth) .. "fs"
+							.. (regs[r] == label and "(LABEL)" or "") .. " '"
+							.. tostring(regs[r]:GetText()) .. "' alpha=" .. tostring(regs[r]:GetAlpha())
+							.. " shown=" .. tostring(regs[r]:IsShown())
+							.. " visible=" .. tostring(regs[r]:IsVisible()));
+					end
+				end
+				local kids = { obj:GetChildren() };
+				for k = 1, table.getn(kids) do
+					table.insert(lines, string.rep(" ", depth) .. "child " .. kids[k]:GetObjectType()
+						.. " shown=" .. tostring(kids[k]:IsShown()) .. " scale=" .. tostring(kids[k]:GetScale()));
+					Dump(kids[k], depth + 1);
+				end
+			end
+			Dump(frame, 1);
+			DEFAULT_CHAT_FRAME:AddMessage("ASTinyPlates name=" .. tostring(frame.astinyplatesPlateName)
+				.. " boss=" .. tostring(frame.astinyplatesBossGuardian)
+				.. " frameAlpha=" .. tostring(frame:GetAlpha())
+				.. " frameVisible=" .. tostring(frame:IsVisible()));
+			for l = 1, table.getn(lines) do DEFAULT_CHAT_FRAME:AddMessage(lines[l]); end
+		end
 		if ( frame.astinyplatesStyledVisual ) then
 			DEFAULT_CHAT_FRAME:AddMessage("ASTinyPlates styled visual shown="
 				.. tostring(frame.astinyplatesStyledVisual:IsShown()));
