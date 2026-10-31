@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: ASTinyPlates
+## Notes: Shrinks nameplates for regular mobs
+## Version: 1.0
+## Author: Valorless
+
+ASTinyPlates.lua
