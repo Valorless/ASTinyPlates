@@ -1,6 +1,6 @@
 ## Interface: 11200
 ## Title: ASTinyPlates
-## Notes: Shrinks nameplates for regular mobs
+## Notes: Shrinks regular mob nameplates to half size; keeps boss and guardian nameplates full size with a name label, status bar and debuff icons with timers (uses AZS data).
 ## Version: 1.1.2
 ## Author: Valorless
 
