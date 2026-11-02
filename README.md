@@ -19,7 +19,7 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 | Show debuffs | On | Show the debuff icons with timers below boss and guardian plates. |
 | Hide the name on boss/guardian plates | Off | Hide the name above boss and guardian plates. |
 | Hide regular plates | Off | Hide the shrunken regular plates completely, leaving only boss and guardian plates (requires Overlapping nameplates). |
-| Show the name on regular mob plates | Off | Show the mob's name above shrunken plates (not used while shrunken plates are hidden). |
+| Show the name on regular mob plates | Off | Show the mob's name above shrunken plates (not used while regular plates are hidden). |
 
 ## Screenshots
 
