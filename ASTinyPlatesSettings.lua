@@ -36,7 +36,8 @@ local OPTIONS = {
 	{ key = "hideBossName", label = "Hide the name on boss/guardian plates",
 		tip = "Hide the name shown above boss and guardian nameplates." },
 	{ key = "hideShrunkPlates", label = "Hide shrunken plates", gap = true,
-		tip = "Hide the shrunken regular nameplates completely, leaving only boss and guardian plates." },
+		tip = "Hide the shrunken regular nameplates completely, leaving only boss and guardian plates.",
+		note = "Requires Overlapping nameplates." },
 	{ key = "showShrunkName", label = "Show the name on shrunken plates", disabledBy = "hideShrunkPlates",
 		tip = "Show the mob's name above shrunken nameplates. Not used while 'Hide shrunken plates' is on." },
 };
@@ -75,6 +76,7 @@ local function CreateCheckbox(option, index, y)
 		GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
 		GameTooltip:SetText(this.option.label, 1, 0.82, 0);
 		GameTooltip:AddLine(this.option.tip, 0.9, 0.9, 0.9, 1);
+		if ( this.option.note ) then GameTooltip:AddLine(this.option.note, 1, 0.3, 0.3, 1); end
 		GameTooltip:Show();
 	end);
 	box:SetScript("OnLeave", function() GameTooltip:Hide(); end);
