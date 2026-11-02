@@ -1,4 +1,11 @@
 local knownPlates = {};
+
+local OPTION_DEFAULTS = { showDebuffs = true, hideShrunkPlates = false,
+	hideBossName = false, showShrunkName = false };
+local function Opt(key)
+	if ( ASTinyPlatesOption ) then return ASTinyPlatesOption(key); end
+	return OPTION_DEFAULTS[key];
+end
 local debugPlates = {};
 local BORDER = "Interface\\Tooltips\\Nameplate-Border";
 local PLATE_SCALE = 0.5;
@@ -666,7 +673,8 @@ local function HideNativePlate(frame, keep)
 	end
 	local children = { frame:GetChildren() };
 	for i = 1, table.getn(children) do
-		if ( children[i] ~= keep and children[i] ~= frame.astinyplatesOverlay ) then
+		if ( children[i] ~= keep and children[i] ~= frame.astinyplatesOverlay
+				and children[i] ~= frame.astinyplatesShrunkLabelHolder ) then
 			children[i]:Hide();
 		end
 	end
@@ -688,10 +696,54 @@ local function IsPlaceholderShrunk(frame)
 	return false;
 end
 
+local function HideShrunkNameLabel(frame)
+	if ( frame.astinyplatesShrunkLabelHolder ) then frame.astinyplatesShrunkLabelHolder:Hide(); end
+end
+
+-- Name above a shrunken plate; lives on its own child frame so the native-child hiding does not remove it.
+local function UpdateShrunkNameLabel(frame)
+	local name = frame.astinyplatesPlateName;
+	if ( not Opt("showShrunkName") or frame.astinyplatesBossGuardian
+			or not name or name == "" ) then
+		HideShrunkNameLabel(frame);
+		return;
+	end
+	local holder = frame.astinyplatesShrunkLabelHolder;
+	if ( not holder ) then
+		holder = CreateFrame("Frame", nil, frame);
+		holder:SetAllPoints(frame);
+		holder:SetFrameLevel(frame:GetFrameLevel() + 10);
+		local text = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall");
+		text:SetWidth(140);
+		text:SetHeight(12);
+		text:SetJustifyH("CENTER");
+		text:SetTextColor(1, 1, 1, 1);
+		holder.text = text;
+		frame.astinyplatesShrunkLabelHolder = holder;
+	end
+	local anchor = frame.astinyplatesStyledVisual or frame.astinyplatesOverlay
+		or frame.astinyplatesSourceBar or frame;
+	holder.text:ClearAllPoints();
+	holder.text:SetPoint("BOTTOM", anchor, "TOP", 0, 2);
+	holder.text:SetText(name);
+	holder.text:SetAlpha(1);
+	holder:Show();
+end
+
 local function UpdateNamePlaceholder(frame)
 	local label = frame.astinyplatesBossGuardianLabel;
 	if ( IsPlaceholderShrunk(frame) ) then
 		if ( label ) then label:Hide(); end
+		UpdateShrunkNameLabel(frame);
+		return;
+	end
+	HideShrunkNameLabel(frame);
+	if ( frame.astinyplatesBossGuardian and Opt("hideBossName") ) then
+		if ( label ) then label:Hide(); end
+		local visual = frame.astinyplatesStyledVisual;
+		local native = visual and FindNameFontString(visual, frame.astinyplatesPlateName);
+		if ( native ) then native:SetAlpha(0); native:Hide(); end
+		HideMatchingNameText(frame, frame.astinyplatesPlateName, nil);
 		return;
 	end
 	local visual = frame.astinyplatesStyledVisual;
@@ -712,17 +764,34 @@ local function UpdateNamePlaceholder(frame)
 		frame.astinyplatesBossGuardianLabel);
 end
 
+local function HideShrunkPlate(frame)
+	if ( frame.astinyplatesBossGuardianLabel ) then frame.astinyplatesBossGuardianLabel:Hide(); end
+	HideShrunkNameLabel(frame);
+	HideNameText(frame);
+	if ( frame.astinyplatesStyledVisual ) then frame.astinyplatesStyledVisual:Hide(); end
+	if ( frame.astinyplatesOverlay ) then frame.astinyplatesOverlay:Hide(); end
+	HideNativePlate(frame, nil);
+end
+
 local function ApplyPlateStyle(frame)
 	if ( IsBossOrGuardianPlate(frame) ) then
 		RestoreNativeState(frame);
 		HideNameText(frame);
 		UpdateNamePlaceholder(frame);
-		UpdateBossGuardianDebuffs(frame);
+		if ( Opt("showDebuffs") ) then
+			UpdateBossGuardianDebuffs(frame);
+		elseif ( frame.astinyplatesDebuffRow ) then
+			frame.astinyplatesDebuffRow:Hide();
+		end
 		return;
 	end
 	if ( frame.astinyplatesBossGuardianLabel ) then frame.astinyplatesBossGuardianLabel:Hide(); end
 	if ( frame.astinyplatesDebuffRow ) then frame.astinyplatesDebuffRow:Hide(); end
 	frame.astinyplatesNativeRestored = nil;
+	if ( Opt("hideShrunkPlates") ) then
+		HideShrunkPlate(frame);
+		return;
+	end
 	local visualScale = PLATE_SCALE;
 	HideNameText(frame);
 	local styled = frame.astinyplatesStyledVisual;
@@ -827,7 +896,7 @@ local function ApplyPlateStyle(frame)
 	local children = { frame:GetChildren() };
 	for i = 1, table.getn(children) do
 		local child = children[i];
-		if ( child ~= overlay ) then child:Hide(); end
+		if ( child ~= overlay and child ~= frame.astinyplatesShrunkLabelHolder ) then child:Hide(); end
 	end
 	UpdateNamePlaceholder(frame);
 end

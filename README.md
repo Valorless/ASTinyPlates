@@ -10,6 +10,16 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
   - a status bar
   - debuff icons with timers
 - **Works with UI replacements** – tested with the default UI and with SDUI.
+- **Settings window and minimap button** – a dragon minimap button (click to open, drag to move it round the minimap; the position is saved) or `/astp` opens the settings window. Changes apply immediately and are saved in `ASTinyPlatesDB`.
+
+## Settings
+
+| Option | Default | Description |
+| --- | --- | --- |
+| Show debuffs | On | Show the debuff icons with timers below boss and guardian plates. |
+| Hide the name on boss/guardian plates | Off | Hide the name above boss and guardian plates. |
+| Hide regular plates | Off | Hide the shrunken regular plates completely, leaving only boss and guardian plates (requires Overlapping nameplates). |
+| Show the name on regular mob plates | Off | Show the mob's name above shrunken plates (not used while regular plates are hidden). |
 
 ## Screenshots
 
@@ -37,6 +47,7 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 
 | Command | Description |
 | --- | --- |
+| `/astp` (or `/astinyplates`) | Opens or closes the settings window. |
 | `/astpdebug` | Prints debug information about the visible boss/guardian nameplates to the chat frame. |
 
 ## Releases
