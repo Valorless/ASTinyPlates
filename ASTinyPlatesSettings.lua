@@ -39,7 +39,7 @@ local OPTIONS = {
 			tip = "Hide the regular mob nameplates completely, leaving only boss and guardian plates.",
 		note = "Requires Overlapping nameplates." },
 	{ key = "showShrunkName", 	label = "Show name", disabledBy = "hideShrunkPlates",
-			tip = "Show the regular mob's name above nameplates. Not used while 'Hide shrunken plates' is on." },
+			tip = "Show the regular mob's name above nameplates. Not used while 'Hide regular plates' is on." },
 };
 
 local function UpdateCheckboxes()
