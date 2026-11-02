@@ -3,5 +3,7 @@
 ## Notes: Shrinks regular mob nameplates to half size; keeps boss and guardian nameplates full size with a name label, status bar and debuff icons with timers.
 ## Version: 1.3.4
 ## Author: Valorless
+## SavedVariables: ASTinyPlatesDB
 
 ASTinyPlates.lua
+ASTinyPlatesSettings.lua
