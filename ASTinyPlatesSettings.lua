@@ -33,13 +33,13 @@ end
 local OPTIONS = {
 	{ key = "showDebuffs", label = "Show debuffs",
 		tip = "Show the debuff icons below boss and guardian plates." },
-	{ key = "hideBossName", label = "Hide the name on boss/guardian plates",
+	{ key = "hideBossName", label = "Hide name",
 		tip = "Hide the name shown above boss and guardian nameplates." },
-	{ key = "hideShrunkPlates", label = "Hide shrunken plates", gap = true,
-		tip = "Hide the shrunken regular nameplates completely, leaving only boss and guardian plates.",
+	{ key = "hideShrunkPlates", 	label = "Hide nameplates", gap = true,
+			tip = "Hide the regular mob nameplates completely, leaving only boss and guardian plates.",
 		note = "Requires Overlapping nameplates." },
-	{ key = "showShrunkName", label = "Show the name on shrunken plates", disabledBy = "hideShrunkPlates",
-		tip = "Show the mob's name above shrunken nameplates. Not used while 'Hide shrunken plates' is on." },
+	{ key = "showShrunkName", 	label = "Show name", disabledBy = "hideShrunkPlates",
+			tip = "Show the regular mob's name above nameplates. Not used while 'Hide shrunken plates' is on." },
 };
 
 local function UpdateCheckboxes()
@@ -108,14 +108,14 @@ local function CreateWindow()
 
 	local title = window:CreateFontString(nil, "OVERLAY", "GameFontNormal");
 	title:SetPoint("TOP", window, "TOP", 0, -16);
-	title:SetText("ASTinyPlates settings");
+	title:SetText("ASTinyPlates Settings");
 	local close = CreateFrame("Button", "ASTinyPlatesSettingsClose", window, "UIPanelCloseButton");
 	if ( ASTinyPlatesKeepOnTop ) then ASTinyPlatesKeepOnTop(close); end
 	close:SetPoint("TOPRIGHT", window, "TOPRIGHT", -6, -6);
 
 	local bossLabel = window:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
 	bossLabel:SetPoint("TOPLEFT", window, "TOPLEFT", 20, -42);
-	bossLabel:SetText("Boss and guardian plates");
+	bossLabel:SetText("Boss & Guardian Plates");
 	local y = -54;
 	for i = 1, table.getn(OPTIONS) do
 		local option = OPTIONS[i];
@@ -123,7 +123,7 @@ local function CreateWindow()
 			y = y - 10;
 			local shrunkLabel = window:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
 			shrunkLabel:SetPoint("TOPLEFT", window, "TOPLEFT", 20, y - 2);
-			shrunkLabel:SetText("Shrunken plates");
+			shrunkLabel:SetText("Regular Plates");
 			y = y - 14;
 		end
 		CreateCheckbox(option, i, y);
