@@ -20,6 +20,14 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 | Hide the name on boss/guardian plates | Off | Hide the name above boss and guardian plates. |
 | Hide regular plates | Off | Hide the shrunken regular plates completely, leaving only boss and guardian plates (requires Overlapping nameplates). |
 | Show the name on regular mob plates | Off | Show the mob's name above shrunken plates (not used while regular plates are hidden). |
+| Custom bar color (boss/guardian) | Off | Color boss and guardian health bars yourself instead of the game's colors. |
+| Custom bar color (regular) | Off | Color the shrunken regular health bars yourself. |
+
+### Custom bar colors (colorblind support)
+
+The bar is not a red texture: the game colors the health bar by reaction (hostile red, neutral yellow, friendly green) and ASTinyPlates copies that color. Each plate type (boss/guardian and regular) has its own **Custom bar color** setting. Off keeps the game's colors, so nothing changes unless you opt in.
+
+When on, click the swatch to open the color picker, or click one of six colorblind-friendly presets (blue, orange, sky blue, vermillion, yellow, pink; Okabe-Ito palette). **Reset** turns the override off again. Changes apply live and work with the default UI as well as SDUI. The override uses one color for all reactions (hostile, neutral and friendly), and the original colors are restored when you turn it off.
 
 ## Screenshots
 

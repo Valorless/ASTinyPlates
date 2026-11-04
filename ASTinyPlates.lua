@@ -764,6 +764,70 @@ local function UpdateNamePlaceholder(frame)
 		frame.astinyplatesBossGuardianLabel);
 end
 
+-- Custom bar colors. The color the game/SDUI last set is remembered per bar so it can be restored
+-- when the override is turned off or a recycled plate changes category.
+local function BarColor(category)
+	if ( ASTinyPlatesBarColor ) then return ASTinyPlatesBarColor(category); end
+	return nil;
+end
+
+local function ColorsDiffer(r1, g1, b1, r2, g2, b2)
+	return math.abs((r1 or 0) - r2) > 0.01 or math.abs((g1 or 0) - g2) > 0.01
+		or math.abs((b1 or 0) - b2) > 0.01;
+end
+
+local function ApplyBarOverride(bar, color)
+	if ( not bar or not bar.SetStatusBarColor ) then return; end
+	if ( color ) then
+		local r, g, b, a = bar:GetStatusBarColor();
+		local applied = bar.astinyplatesAppliedColor;
+		if ( not applied or ColorsDiffer(r, g, b, applied[1], applied[2], applied[3]) ) then
+			bar.astinyplatesOriginalColor = { r or 1, g or 1, b or 1, a };
+		end
+		if ( ColorsDiffer(r, g, b, color[1], color[2], color[3]) ) then
+			bar:SetStatusBarColor(color[1], color[2], color[3]);
+		end
+		bar.astinyplatesAppliedColor = { color[1], color[2], color[3] };
+	elseif ( bar.astinyplatesAppliedColor ) then
+		local original = bar.astinyplatesOriginalColor;
+		if ( original ) then
+			if ( original[4] ) then
+				bar:SetStatusBarColor(original[1], original[2], original[3], original[4]);
+			else
+				bar:SetStatusBarColor(original[1], original[2], original[3]);
+			end
+		end
+		bar.astinyplatesAppliedColor = nil;
+		bar.astinyplatesOriginalColor = nil;
+	end
+end
+
+local function CollectStatusBars(frame, list)
+	local children = { frame:GetChildren() };
+	for i = 1, table.getn(children) do
+		if ( children[i]:GetObjectType() == "StatusBar" ) then table.insert(list, children[i]); end
+		CollectStatusBars(children[i], list);
+	end
+	return list;
+end
+
+-- Covers SDUI's styled visual and the native health bar; our overlay copies the native bar.
+local function ApplyPlateBarColor(frame, color)
+	local styled = frame.astinyplatesStyledVisual;
+	if ( styled ) then
+		local bars = CollectStatusBars(styled, {});
+		for i = 1, table.getn(bars) do ApplyBarOverride(bars[i], color); end
+	end
+	local source = frame.astinyplatesSourceBar;
+	if ( not source ) then
+		local children = { frame:GetChildren() };
+		for i = 1, table.getn(children) do
+			if ( children[i]:GetObjectType() == "StatusBar" ) then source = children[i]; break; end
+		end
+	end
+	ApplyBarOverride(source, color);
+end
+
 local function HideShrunkPlate(frame)
 	if ( frame.astinyplatesBossGuardianLabel ) then frame.astinyplatesBossGuardianLabel:Hide(); end
 	HideShrunkNameLabel(frame);
@@ -776,6 +840,7 @@ end
 local function ApplyPlateStyle(frame)
 	if ( IsBossOrGuardianPlate(frame) ) then
 		RestoreNativeState(frame);
+		ApplyPlateBarColor(frame, BarColor("boss"));
 		HideNameText(frame);
 		UpdateNamePlaceholder(frame);
 		if ( Opt("showDebuffs") ) then
@@ -793,6 +858,7 @@ local function ApplyPlateStyle(frame)
 		return;
 	end
 	local visualScale = PLATE_SCALE;
+	ApplyPlateBarColor(frame, BarColor("regular"));
 	HideNameText(frame);
 	local styled = frame.astinyplatesStyledVisual;
 	if ( styled ) then
