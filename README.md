@@ -4,13 +4,14 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 
 ## Features
 
-- **Tiny regular plates** – ordinary mob nameplates are shrunk to half size.
-- **Full-size boss and guardian plates** – these keep their normal size and show:
-  - a name label
-  - a status bar
-  - debuff icons with timers
-- **Works with UI replacements** – tested with the default UI and with SDUI.
-- **Settings window and minimap button** – a dragon minimap button (click to open, drag to move it round the minimap; the position is saved) or `/astp` opens the settings window. Changes apply immediately and are saved in `ASTinyPlatesDB`.
+- **Tiny regular plates** – Ordinary mob nameplates are shrunk to half size.
+- **Full-size boss and guardian plates** – These keep their normal size and show:
+  - A name label
+  - A status bar
+  - Debuff icons with timers
+- **Works with UI replacements** – Tested with the default UI and with SDUI.
+- **Settings window and minimap button** – A dragon minimap button (click to open, drag to move it round the minimap; the position is saved) or `/astp` opens the settings window. Changes apply immediately and are saved in `ASTinyPlatesDB`.
+- **Custom bar colors** *(colorblind support)* - Choose any color you prefer for the plates.
 
 ## Settings
 
@@ -22,12 +23,6 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 | Show the name on regular mob plates | Off | Show the mob's name above shrunken plates (not used while regular plates are hidden). |
 | Custom bar color (boss/guardian) | Off | Color boss and guardian health bars yourself instead of the game's colors. |
 | Custom bar color (regular) | Off | Color the shrunken regular health bars yourself. |
-
-### Custom bar colors (colorblind support)
-
-The bar is not a red texture: the game colors the health bar by reaction (hostile red, neutral yellow, friendly green) and ASTinyPlates copies that color. Each plate type (boss/guardian and regular) has its own **Custom bar color** setting. Off keeps the game's colors, so nothing changes unless you opt in.
-
-When on, click the swatch to open the color picker, or click one of six colorblind-friendly presets (blue, orange, sky blue, vermillion, yellow, pink; Okabe-Ito palette, brightened to full value to offset the bar texture dimming colors). **Reset** turns the override off again. Changes apply live and work with the default UI as well as SDUI. The override uses one color for all reactions (hostile, neutral and friendly), and the original colors are restored when you turn it off.
 
 ## Screenshots
 
