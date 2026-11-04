@@ -27,7 +27,7 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 
 The bar is not a red texture: the game colors the health bar by reaction (hostile red, neutral yellow, friendly green) and ASTinyPlates copies that color. Each plate type (boss/guardian and regular) has its own **Custom bar color** setting. Off keeps the game's colors, so nothing changes unless you opt in.
 
-When on, click the swatch to open the color picker, or click one of six colorblind-friendly presets (blue, orange, sky blue, vermillion, yellow, pink; Okabe-Ito palette). **Reset** turns the override off again. Changes apply live and work with the default UI as well as SDUI. The override uses one color for all reactions (hostile, neutral and friendly), and the original colors are restored when you turn it off.
+When on, click the swatch to open the color picker, or click one of six colorblind-friendly presets (blue, orange, sky blue, vermillion, yellow, pink; Okabe-Ito palette, brightened to full value to offset the bar texture dimming colors). **Reset** turns the override off again. Changes apply live and work with the default UI as well as SDUI. The override uses one color for all reactions (hostile, neutral and friendly), and the original colors are restored when you turn it off.
 
 ## Screenshots
 

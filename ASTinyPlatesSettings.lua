@@ -26,12 +26,12 @@ end
 
 -- Colorblind-friendly presets (Okabe-Ito palette).
 local PRESETS = {
-	{ name = "Blue", 0, 0.45, 0.70 },
-	{ name = "Orange", 0.90, 0.62, 0 },
-	{ name = "Sky blue", 0.34, 0.71, 0.91 },
-	{ name = "Vermillion", 0.84, 0.37, 0 },
-	{ name = "Yellow", 0.94, 0.89, 0.26 },
-	{ name = "Pink", 0.80, 0.47, 0.65 },
+	{ name = "Blue", 0, 0.64, 1 },
+	{ name = "Orange", 1, 0.69, 0 },
+	{ name = "Sky blue", 0.37, 0.78, 1 },
+	{ name = "Vermillion", 1, 0.44, 0 },
+	{ name = "Yellow", 1, 0.95, 0.28 },
+	{ name = "Pink", 1, 0.59, 0.81 },
 };
 local DEFAULT_CUSTOM = PRESETS[1];
 local colorRows = {};
