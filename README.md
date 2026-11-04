@@ -4,13 +4,14 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 
 ## Features
 
-- **Tiny regular plates** – ordinary mob nameplates are shrunk to half size.
-- **Full-size boss and guardian plates** – these keep their normal size and show:
-  - a name label
-  - a status bar
-  - debuff icons with timers
-- **Works with UI replacements** – tested with the default UI and with SDUI.
-- **Settings window and minimap button** – a dragon minimap button (click to open, drag to move it round the minimap; the position is saved) or `/astp` opens the settings window. Changes apply immediately and are saved in `ASTinyPlatesDB`.
+- **Tiny regular plates** – Ordinary mob nameplates are shrunk to half size.
+- **Full-size boss and guardian plates** – These keep their normal size and show:
+  - A name label
+  - A status bar
+  - Debuff icons with timers
+- **Works with UI replacements** – Tested with the default UI and with SDUI.
+- **Settings window and minimap button** – A dragon minimap button (click to open, drag to move it round the minimap; the position is saved) or `/astp` opens the settings window. Changes apply immediately and are saved in `ASTinyPlatesDB`.
+- **Custom bar colors** *(colorblind support)* - Choose any color you prefer for the plates.
 
 ## Settings
 
@@ -20,6 +21,8 @@ An **Azeroth Survivors** addon that declutters the screen by shrinking nameplate
 | Hide the name on boss/guardian plates | Off | Hide the name above boss and guardian plates. |
 | Hide regular plates | Off | Hide the shrunken regular plates completely, leaving only boss and guardian plates (requires Overlapping nameplates). |
 | Show the name on regular mob plates | Off | Show the mob's name above shrunken plates (not used while regular plates are hidden). |
+| Custom bar color (boss/guardian) | Off | Color boss and guardian health bars yourself instead of the game's colors. |
+| Custom bar color (regular) | Off | Color the shrunken regular health bars yourself. |
 
 ## Screenshots
 

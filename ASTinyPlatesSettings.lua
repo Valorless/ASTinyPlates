@@ -24,6 +24,28 @@ local function MainDB()
 	return ASTinyPlatesDB;
 end
 
+-- Colorblind-friendly presets (Okabe-Ito palette).
+local PRESETS = {
+	{ name = "Blue", 0, 0.64, 1 },
+	{ name = "Orange", 1, 0.69, 0 },
+	{ name = "Sky blue", 0.37, 0.78, 1 },
+	{ name = "Vermillion", 1, 0.44, 0 },
+	{ name = "Yellow", 1, 0.95, 0.28 },
+	{ name = "Pink", 1, 0.59, 0.81 },
+};
+local DEFAULT_CUSTOM = PRESETS[1];
+local colorRows = {};
+local UpdateColorRows;
+
+-- Returns {r, g, b} when the custom color is on for category "regular" or "boss", otherwise nil (game colors).
+function ASTinyPlatesBarColor(category)
+	local db = ASTinyPlatesDB;
+	if ( type(db) ~= "table" or not db[category .. "BarColorOn"] ) then return nil; end
+	local c = db[category .. "BarColor"];
+	if ( type(c) ~= "table" ) then return DEFAULT_CUSTOM; end
+	return { tonumber(c[1]) or 1, tonumber(c[2]) or 1, tonumber(c[3]) or 1 };
+end
+
 function ASTinyPlatesOption(key)
 	local db = ASTinyPlatesDB;
 	if ( type(db) == "table" and db[key] ~= nil ) then return db[key] and true or false; end
@@ -44,6 +66,7 @@ local OPTIONS = {
 
 local function UpdateCheckboxes()
 	if ( not window ) then return; end
+	if ( UpdateColorRows ) then UpdateColorRows(); end
 	for i = 1, table.getn(OPTIONS) do
 		local option = OPTIONS[i];
 		local box = checkboxes[option.key];
@@ -83,6 +106,128 @@ local function CreateCheckbox(option, index, y)
 	checkboxes[option.key] = box;
 end
 
+local function SetCustomColor(category, r, g, b)
+	local db = MainDB();
+	db[category .. "BarColor"] = { r, g, b };
+	db[category .. "BarColorOn"] = true;
+	UpdateColorRows();
+end
+
+local function OpenColorPicker(category)
+	local current = ASTinyPlatesBarColor(category) or DEFAULT_CUSTOM;
+	local db = MainDB();
+	local wasOn, previous = db[category .. "BarColorOn"], db[category .. "BarColor"];
+	local function Picked()
+		local r, g, b = ColorPickerFrame:GetColorRGB();
+		SetCustomColor(category, r, g, b);
+	end
+	local function Cancelled()
+		db[category .. "BarColorOn"] = wasOn;
+		db[category .. "BarColor"] = previous;
+		UpdateColorRows();
+	end
+	ColorPickerFrame:Hide();
+	ColorPickerFrame.hasOpacity = nil;
+	ColorPickerFrame.opacityFunc = nil;
+	ColorPickerFrame.func = Picked;
+	ColorPickerFrame.cancelFunc = Cancelled;
+	ColorPickerFrame:SetColorRGB(current[1], current[2], current[3]);
+	ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG");
+	if ( ASTinyPlatesKeepOnTop ) then ASTinyPlatesKeepOnTop(ColorPickerFrame); end
+	ColorPickerFrame:Show();
+end
+
+local function ColorTip(frame, title, text)
+	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+	GameTooltip:SetText(title, 1, 0.82, 0);
+	if ( text ) then GameTooltip:AddLine(text, 0.9, 0.9, 0.9, 1); end
+	GameTooltip:Show();
+end
+
+local function CreateColorSwatch(parent, size)
+	local button = CreateFrame("Button", nil, parent);
+	if ( ASTinyPlatesKeepOnTop ) then ASTinyPlatesKeepOnTop(button); end
+	button:SetWidth(size);
+	button:SetHeight(size);
+	local border = button:CreateTexture(nil, "BACKGROUND");
+	border:SetAllPoints(button);
+	border:SetTexture("Interface\\Buttons\\WHITE8X8");
+	border:SetVertexColor(0.6, 0.6, 0.6, 1);
+	local fill = button:CreateTexture(nil, "ARTWORK");
+	fill:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2);
+	fill:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2);
+	fill:SetTexture("Interface\\Buttons\\WHITE8X8");
+	button.fill = fill;
+	button:SetScript("OnLeave", function() GameTooltip:Hide(); end);
+	return button;
+end
+
+-- One block per plate category: enable checkbox, picker swatch, colorblind presets and reset.
+local function CreateColorRow(category, y, tipTarget)
+	local row = {};
+	local box = CreateFrame("CheckButton", "ASTinyPlatesSettingsColor" .. category, window, "UICheckButtonTemplate");
+	if ( ASTinyPlatesKeepOnTop ) then ASTinyPlatesKeepOnTop(box); end
+	box:SetWidth(26);
+	box:SetHeight(26);
+	box:SetPoint("TOPLEFT", window, "TOPLEFT", 16, y);
+	local text = getglobal(box:GetName() .. "Text");
+	if ( text ) then text:SetText("Custom bar color"); end
+	box:SetScript("OnClick", function()
+		MainDB()[category .. "BarColorOn"] = this:GetChecked() and true or false;
+		UpdateColorRows();
+	end);
+	box:SetScript("OnEnter", function()
+		ColorTip(this, "Custom bar color", "Color the " .. tipTarget .. " health bars yourself instead of using the game's "
+			.. "red/yellow/green. Off keeps the game's colors.");
+	end);
+	box:SetScript("OnLeave", function() GameTooltip:Hide(); end);
+	row.box = box;
+
+	local swatch = CreateColorSwatch(window, 20);
+	swatch:SetPoint("TOPLEFT", window, "TOPLEFT", 44, y - 28);
+	swatch:SetScript("OnClick", function() OpenColorPicker(category); end);
+	swatch:SetScript("OnEnter", function() ColorTip(this, "Pick a color", "Open the color picker."); end);
+	row.swatch = swatch;
+
+	row.presets = {};
+	for i = 1, table.getn(PRESETS) do
+		local preset = PRESETS[i];
+		local p = CreateColorSwatch(window, 16);
+		p:SetPoint("TOPLEFT", window, "TOPLEFT", 74 + (i - 1) * 20, y - 30);
+		p.fill:SetVertexColor(preset[1], preset[2], preset[3], 1);
+		p:SetScript("OnClick", function() SetCustomColor(category, preset[1], preset[2], preset[3]); end);
+		p:SetScript("OnEnter", function() ColorTip(this, preset.name, "Colorblind-friendly preset."); end);
+		row.presets[i] = p;
+	end
+
+	local reset = CreateFrame("Button", nil, window, "UIPanelButtonTemplate");
+	if ( ASTinyPlatesKeepOnTop ) then ASTinyPlatesKeepOnTop(reset); end
+	reset:SetWidth(50);
+	reset:SetHeight(20);
+	reset:SetPoint("TOPLEFT", window, "TOPLEFT", 200, y - 28);
+	reset:SetText("Reset");
+	reset:SetScript("OnClick", function()
+		local db = MainDB();
+		db[category .. "BarColorOn"] = false;
+		db[category .. "BarColor"] = nil;
+		UpdateColorRows();
+	end);
+	reset:SetScript("OnEnter", function() ColorTip(this, "Reset", "Turn the custom color off and use the game's colors again."); end);
+	reset:SetScript("OnLeave", function() GameTooltip:Hide(); end);
+	row.reset = reset;
+	colorRows[category] = row;
+end
+
+UpdateColorRows = function()
+	for category, row in pairs(colorRows) do
+		local on = MainDB()[category .. "BarColorOn"] and true or false;
+		row.box:SetChecked(on and 1 or nil);
+		local c = ASTinyPlatesBarColor(category) or DEFAULT_CUSTOM;
+		row.swatch.fill:SetVertexColor(c[1], c[2], c[3], 1);
+		if ( not on ) then row.swatch.fill:SetVertexColor(c[1], c[2], c[3], 0.4); end
+	end
+end
+
 local function CreateWindow()
 	window = CreateFrame("Frame", "ASTinyPlatesSettingsFrame", UIParent);
 	if ( ASTinyPlatesKeepOnTop ) then ASTinyPlatesKeepOnTop(window); end
@@ -120,6 +265,8 @@ local function CreateWindow()
 	for i = 1, table.getn(OPTIONS) do
 		local option = OPTIONS[i];
 		if ( option.gap ) then
+			CreateColorRow("boss", y, "boss and guardian");
+			y = y - 56;
 			y = y - 10;
 			local shrunkLabel = window:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall");
 			shrunkLabel:SetPoint("TOPLEFT", window, "TOPLEFT", 20, y - 2);
@@ -129,6 +276,8 @@ local function CreateWindow()
 		CreateCheckbox(option, i, y);
 		y = y - 28;
 	end
+	CreateColorRow("regular", y, "regular (shrunken)");
+	y = y - 56;
 	window:SetHeight(-y + 22);
 	UpdateCheckboxes();
 end
